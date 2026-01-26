@@ -1,0 +1,37 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Object Detection | Get Started</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="{% static '/start.css' %}">
+</head>
+<body>
+  <!-- Background circles -->
+  <div class="circle"></div>
+  <div class="circle"></div>
+  <div class="circle"></div>
+
+  <!-- Top links (Login + Sign Up) -->
+  {% comment %} <div class="nav-buttons">
+    <a href="/login">Login</a>
+    <a href="/signup">Sign up</a>
+  </div> {% endcomment %}
+
+  <!-- Center content -->
+  <div class="content">
+    <h1>Welcome to LiveVision</h1>
+    <p>
+      Experience the power of Artificial Intelligence — detect, identify, and analyze multiple objects in real-time with precision.
+    </p>
+    <button onclick="goToHome()">Get Started</button>
+  </div>
+  <script> 
+    function goToHome() {
+      window.location.href = "/home";
+    }
+  </script>
+</body>
+</html>

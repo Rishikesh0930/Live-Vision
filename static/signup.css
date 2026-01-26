@@ -1,0 +1,112 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+  }
+
+  body {
+    background:  #1a1a1a;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    padding: 20px;
+  }
+
+  .signup-card {
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    padding: 40px 30px;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: 0 0 25px #333333;
+    text-align: center;
+  }
+
+  h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    background: linear-gradient(90deg,#00eaff,#007bff);
+    background-clip: text; /* optional fallback */
+    color: transparent; 
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  input {
+    padding: 12px 15px;
+    border-radius: 12px;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  input::placeholder {
+    color: #b8c2d8;
+  }
+
+  input:focus {
+    background: rgba(0,255,255,0.1);
+    box-shadow: 0 0 10px rgba(0,255,255,0.5);
+  }
+
+  .btn {
+    padding: 12px 0;
+    border-radius: 50px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    background: linear-gradient(90deg,#00c6ff,#0072ff);
+    color: #fff;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 6px rgba(0,195,255,0.5);
+  }
+
+  .btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 6px rgba(0,255,255,0.8);
+  }
+
+  p.login-link {
+    margin-top: 15px;
+    font-size: 0.9rem;
+    color: #b8c2d8;
+  }
+
+  p.login-link a {
+    color: #00eaff;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  p.login-link a:hover {
+    color: #ffffff;
+  }
+
+  @media (max-width: 480px) {
+    .signup-card {
+      padding: 30px 20px;
+    }
+    h2 {
+      font-size: 1.6rem;
+    }
+    input {
+      font-size: 0.95rem;
+    }
+    .btn {
+      font-size: 0.95rem;
+    }
+  }
