@@ -13,60 +13,28 @@
   <button class="go-home-btn" onclick="goHome()"><i class="fas fa-arrow-left"></i></button>
   <main class="main-container">
     <div class="tops-card">
-      <h1>About LiveVision</h1>
-      <p class="p1">
-        LiveVision is an intelligent computer vision–based system designed to detect and 
-        classify multiple objects simultaneously from a live video stream. The project utilizes 
-        deep learning techniques to analyze real-time video frames and accurately identify 
-        different object classes present in the scene. The LiveVision project has wide applications 
-        in areas such as surveillance systems, traffic monitoring, smart security solutions, 
-        retail analytics, and research-based computer vision. Its scalable and modular design allows future enhancements,
-        integration with advanced analytics systems.
-      </p>
+      <h1>{{ about.title }}</h1>
+      <p class="p1">{{ about.p1 }}</p>
     </div>
     <div class="about-container">
+      {% for card in about.card %}
+        <div class="about-card">
+          <h3>{{ card.title }}</h3>
+            <ul class="p2">
+              {% for item in card.content %}
+                <li> {{ item }}</li>
+              {% endfor %}
+            </ul>
+        </div>
+      {% endfor %}
       <div class="about-card">
-        <h3>💡 How to Use</h3>
-        <p class="p2">
-          • Start the application.<br>
-          • Click on button-Start Detection<br>
-          • Open will be Streaming page.<br>
-          • You can use to need.<br>
-          • View result to click Videos 
-        </p>
-      </div>
-
-      <div class="about-card">
-        <h3>⚙️ Key Features</h3>
-        <p class="p2">
-          • Real-time detection & tracking<br>
-          • Fast image/video processing<br>
-          • Personalized user dashboard<br>
-          • Secure login system<br>
-          • Interactive UI for visualization
-        </p>
-      </div>
-
-      <div class="about-card">
-        <h3>🧠 Powered by AI</h3>
-        <p class="p3">
-          LiveVision uses deep learning models built on modern computer vision frameworks.  
-          The AI adapts dynamically to visuals, providing precise recognition across varied objects and environments.
-        </p>
+        <h3>{{ about.p3_title }}</h3>
+        <p class="p3">{{ about.p3 }}</p>
       </div>
     </div>
-
     <div class="tops-card">
-      <h2>🔍 Why LiveVision?</h2>
-      <p class="p4">
-        The rapid growth of video surveillance systems and real-time monitoring applications 
-        has created a strong need for intelligent solutions that can automatically analyze live 
-        video streams. Traditional monitoring systems rely heavily on human operators, which is 
-        time-consuming, error-prone, and inefficient, especially when dealing with large-scale 
-        video data. This limitation motivated the development of the LiveVision System.
-        This system is designed to address the challenge of identifying and analyzing multiple 
-        objects simultaneously in real time.
-      </p>
+      <h2>{{ about.p4_title }}</h2>
+      <p class="p4">{{ about.p4 }}</p>
     </div>
     <div class="team-section">
       <div class="member">

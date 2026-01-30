@@ -8,15 +8,10 @@ import os
 import time
 from .models import Video
 from django.utils import timezone
+import json
 
 def start(request):
     return render(request, 'start.html')
-
-def login(request):
-    return render(request, 'login.html')
-
-def signup(request):
-    return render(request, 'signup.html')
 
 def home(request):
     return render(request, 'home.html')
@@ -25,7 +20,10 @@ def live_stream(request):
     return render(request, 'livestream.html')
 
 def about(request):
-    return render(request, 'about.html')
+    json_file_about = os.path.join(settings.BASE_DIR, 'static/json/about.json')
+    with open(json_file_about, 'r', encoding='utf-8') as f:
+        about = json.load(f)
+    return render(request, 'about.html', {"about": about})
 
 def video(request):
     # Sync existing videos

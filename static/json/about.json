@@ -1,0 +1,30 @@
+{
+    "title": "About LiveVision",
+    "p1": "LiveVision is an intelligent computer vision–based system designed to detect and classify multiple objects simultaneously from a live video stream. The project utilizes deep learning techniques to analyze real-time video frames and accurately identify different object classes present in the scene. The LiveVision project has wide applications in areas such as surveillance systems, traffic monitoring, smart security solutions, retail analytics, and research-based computer vision. Its scalable and modular design allows future enhancements, integration with advanced analytics systems.",
+    "card": [
+        {   
+            "title": "💡 How to Use",
+            "content": [
+                "Start the application",
+                "Click on button-Start Detection",
+                "Open will be Streaming page",
+                "You can use to need",
+                "View result to click Videos"
+            ]
+        },
+        {   
+            "title": "⚙️ Key Features",
+            "content": [
+                "Real-time detection & tracking",
+                "Fast image/video processing",
+                "Personalized user dashboard", 
+                "Secure login system", 
+                "Interactive UI for visualization" 
+            ]
+        }
+    ],
+    "p3_title": "🧠 Powered by AI",
+    "p3": "LiveVision uses deep learning models built on modern computer vision frameworks. The AI adapts dynamically to visuals, providing precise recognition across varied objects and environments.",
+    "p4_title": "🔍 Why LiveVision?",
+    "p4": "The rapid growth of video surveillance systems and real-time monitoring applications has created a strong need for intelligent solutions that can automatically analyze live video streams. Traditional monitoring systems rely heavily on human operators, which is time-consuming, error-prone, and inefficient, especially when dealing with large-scale video data. This limitation motivated the development of the LiveVision System. This system is designed to address the challenge of identifying and analyzing multiple objects simultaneously in real time."
+}
