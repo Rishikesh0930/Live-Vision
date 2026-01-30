@@ -4,10 +4,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LiveStream Page</title>
+  <title>Live Vision</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" href="{% static '/livestream.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/livestream.css' %}">
 </head>
 <body>
   <div class="full-container">
@@ -23,152 +23,29 @@
         <a href="/about">About</a>
         <a href="/videos">Video</a>
       </div>
-
       <div class="live-indicator" id="liveStatus">
         <span class="dot"></span> LIVE
         <span id="timer" style="margin-left: 8px; font-size: 14px; color: #FFF;"></span>
       </div>
       <div id="videoText">Video Stream Will Appear Here</div>
     </div>
-    
     <div class="buttons">
       <button id="startBtn" class="start" onclick="startStream()">▶ Start Stream</button>
       <button id="stopBtn" class="stop" onclick="stopStream()">⬇ Save Video</button>
       <button id="detailsBtn" class="save" onclick="toggleDetails()">Show Data</button>
     </div>
-
     <div id="detailsBox" class="details-box" style="display: none;">
       <div id="detailsContent">
         <!-- Content will be loaded here -->
       </div>
     </div>
   </div>
-
   <div class="description">
     <p>Seamlessly monitor real-time streams with instant start, secure recording, and history access. Experience smooth, reliable, and intelligent live video analysis – all in one place.</p>
   </div>
-
   <footer>
     <p>© 2026 LiveVision |  All Rights Reserved.</p>
   </footer>
-
-  <script> 
-    let timerInterval;
-    let detailsUpdateInterval;
-
-    function formatClock() {
-      let now = new Date();
-      let hours = now.getHours();
-      let minutes = now.getMinutes();
-      let ampm = hours >= 12 ? "PM" : "AM";
-      hours = hours % 12;
-      hours = hours ? hours : 12; 
-      minutes = minutes < 10 ? "0" + minutes : minutes;
-      return hours + ":" + minutes + " " + ampm;
-    }
-
-    function updateDetails() {
-      const detailsBox = document.getElementById("detailsBox");
-      const detailsContent = document.getElementById("detailsContent");
-
-      if (detailsBox.style.display === "block") {
-        fetch("/get_object_details/")
-          .then(response => response.json())
-          .then(data => {
-            if (data.objects && Object.keys(data.objects).length > 0) {
-              let html = "<h3>Detected Objects</h3><ul>";
-              for (const [obj, count] of Object.entries(data.objects)) {
-                html += `<li><strong>${obj}:</strong> ${count}</li>`;
-              }
-              html += "</ul>";
-              detailsContent.innerHTML = html;
-            } else {
-              detailsContent.innerHTML = "<p>No objects found</p>";
-            }
-          })
-          .catch(error => {
-            detailsContent.innerHTML = "<p>Error loading details</p>";
-          });
-      }
-    }
-
-    function startStream() {
-      fetch("/start_stream/");  // Django URL
-      const video = document.getElementById("videoStream");
-      const loader = document.getElementById("loader");
-      const videoText = document.getElementById("videoText");
-
-      // Show loader, hide video & text
-      loader.style.display = "flex";
-      video.style.display = "none";
-      videoText.style.display = "none";
-
-      video.onload = () => {
-        loader.style.display = "none";   // hide loader
-        video.style.display = "block";   // show video
-      };
-
-      video.src = "/video_feed/";
-      document.getElementById("liveStatus").style.display = "flex";
-      document.getElementById("timer").innerText = formatClock();
-      // 🔹 Update clock every second
-      timerInterval = setInterval(() => {
-        document.getElementById("timer").innerText = formatClock();
-      }, 1000);
-      // 🔹 Start button text & icon change
-      document.getElementById("startBtn").innerHTML = "⏸ Streaming...";
-      document.getElementById("startBtn").disabled = true; // optional: disable start button
-    }
-
-    function stopStream() {
-      fetch("/stop_stream/"); // Django URL
-      const video = document.getElementById("videoStream");
-      const loader = document.getElementById("loader");
-      const videoText = document.getElementById("videoText");
-      // Reset to default state
-      video.style.display = "none";         
-      loader.style.display = "none";        
-      videoText.style.display = "block";    
-      videoText.innerText = "Video Stream Will Appear Here";
-      video.src = "";
-      document.getElementById("liveStatus").style.display = "none";
-      clearInterval(timerInterval);
-      clearInterval(detailsUpdateInterval); // Stop details updates
-      
-      document.getElementById("startBtn").innerHTML = "▶ Start Stream";
-      document.getElementById("startBtn").disabled = false; // optional: enable again
-
-    }
-
-    function toggleDetails() {
-      const detailsBox = document.getElementById("detailsBox");
-
-      if (detailsBox.style.display === "none") {
-        // Show details
-        detailsBox.style.display = "block";
-        updateDetails(); // Initial update
-        // Start live updates every 2 seconds
-        detailsUpdateInterval = setInterval(updateDetails, 2000);
-      } else {
-        // Hide details
-        detailsBox.style.display = "none";
-        clearInterval(detailsUpdateInterval);
-      }
-    }
-
-    function toggleMenu() {
-      let menu = document.getElementById("menu");
-      menu.style.display = (menu.style.display === "flex") ? "none" : "flex";
-    }
-    // Close menu if clicked outside
-    window.onclick = function(event) {
-      if (!event.target.matches('.menu-toggle')) {
-        let menu = document.getElementById("menu");
-        if (menu.style.display === "flex") {
-          menu.style.display = "none";
-        }
-      }
-    }
-  </script>
+  <script src="{% static 'js/livestream.js' %}"></script>
 </body>
 </html>

@@ -4,10 +4,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Home Page</title>
+  <title>Live Vision</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" href="{% static '/home.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/home.css' %}">
 </head>
 <body>
   <nav class="navbar">
@@ -88,59 +88,6 @@
     <p>© 2026 LiveVision | All Rights Reserved.</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    const slides = document.querySelectorAll(".slide");
-    const dots = document.querySelectorAll(".dot");
-    const prevBtn = document.querySelector(".prev");
-    const nextBtn = document.querySelector(".next");
-    const sliderContainer = document.getElementById("slider-container");
-    let index = 0;
-    let interval = setInterval(nextSlide, 4000);
-
-    function showSlide(i) {
-      slides.forEach((slide, idx) => {
-        slide.classList.toggle("active", idx === i);
-        dots[idx].classList.toggle("active", idx === i);
-      });
-    }
-    function nextSlide() {
-      index = (index + 1) % slides.length;
-      showSlide(index);
-    }
-    function prevSlide() {
-      index = (index - 1 + slides.length) % slides.length;
-      showSlide(index);
-    }
-    nextBtn.addEventListener("click", () => {
-      nextSlide();
-      resetInterval();
-    });
-    prevBtn.addEventListener("click", () => {
-      prevSlide();
-      resetInterval();
-    });
-    dots.forEach((dot, i) => {
-      dot.addEventListener("click", () => {
-        index = i;
-        showSlide(index);
-        resetInterval();
-      });
-    });
-    function resetInterval() {
-      clearInterval(interval);
-      interval = setInterval(nextSlide, 4000);
-    }
-
-    const darkToggle = document.getElementById('darkModeToggle');
-    const lightToggle = document.getElementById('lightModeToggle');
-
-    darkToggle.addEventListener('change', () => {
-      if (darkToggle.checked) lightToggle.checked = false;
-    });
-
-    lightToggle.addEventListener('change', () => {
-      if (lightToggle.checked) darkToggle.checked = false;
-    });
-  </script>
+  <script src="{% static 'js/home.js' %}"></script>
 </body>
 </html>
