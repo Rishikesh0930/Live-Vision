@@ -16,11 +16,9 @@
 
   <!-- Center content -->
   <div class="content">
-    <h1>Welcome to LiveVision</h1>
-    <p>
-      Experience the power of Artificial Intelligence — detect, identify, and analyze multiple objects in real-time with precision.
-    </p>
-    <button onclick="goToHome()">Get Started</button>
+    <h1>{{ start.welcome }}</h1>
+    <p>{{ start.content }}</p>
+    <button onclick="goToHome()">{{ start.btn }}</button>
   </div>
   <script src="{% static 'js/start.js' %}"></script>
 </body>

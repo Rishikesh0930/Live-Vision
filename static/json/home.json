@@ -1,0 +1,68 @@
+{
+    "title": "Live",
+    "subtitle": "Vision",
+
+    "navbar": [
+        {
+            "url":"home-page",
+            "name": "Home"
+        },
+        {
+            "url":"about-page",
+            "name": "About"
+        },
+        {
+            "url":"video-page",
+            "name": "Videos"
+        },
+        {
+            "url":"help-page",
+            "name": "Help"
+        }
+    ],
+
+    "welcome": "Welcome on LiveVision",
+    "emoji": "😍",
+    "headline": "Smart detection, Real-time monitoring, live video analysis smarter, faster and more reliable and analysis with saved history access.",
+
+    "img_address": "images/status_img1.png",
+    "img_no": "Image1",
+    "img_caption": "Real-time monitoring and analysis with saved history access",
+    "slider":[
+        {
+            "address": "images/status_img2.png",
+            "img_no": "Image2",
+            "caption": "Seamless automation, Live video analysis smarter, faster, and more reliable"
+        },
+        {
+            "address": "images/status_img3.png",
+            "img_no": "Image3",
+            "caption": "Real-time multi-classification detection system"
+        },
+        {
+            "address": "images/status_img4.png",
+            "img_no": "Image4",
+            "caption": "Real-time multi-classification detection system"
+        }
+    ],
+
+    "btn_section_content": "This project demonstrates an intelligent real-time multi-classification detection system that identifies multiple objects simultaneously with high accuracy. It brings together computer vision and deep learning to make live video analysis smarter, faster, and more reliable.",
+    "btn_name": "Start Detection",
+
+    "card" :[
+        {
+            "title": "🔴 Real-time Monitoring",
+            "content": "Instant object detection with live video feed."
+        },
+        {
+            "title": "💾 Saved Sessions",
+            "content": "Replay and analyze previously captured streams anytime."
+        },
+        {
+            "title": "📊 Insights",
+            "content": "Track and review detection patterns for better decisions."
+        }
+    ],
+    
+    "footer": "© 2026 LiveVision | All Rights Reserved."
+}

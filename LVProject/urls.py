@@ -27,6 +27,7 @@ urlpatterns = [
     path('livestream/', live_stream, name='live-stream'),
     path('about/', about, name='about-page'),
     path('videos/', video, name='video-page'),
+    path('help/', help, name='help-page'),
     path("video_feed/", video_feed, name="video_feed"),
     path("start_stream/", start_stream, name="start_stream"),
     path("stop_stream/", stop_stream, name="stop_stream"),

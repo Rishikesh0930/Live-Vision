@@ -191,11 +191,11 @@ body {
     transform: scale(1.10);
 }
 
-.save {
+.details {
     background: linear-gradient(10deg, #5cb85c, #1E3A8A);
 }
 
-.save:hover {
+.details:hover {
     transform: scale(1.10);
 }
 

@@ -1,0 +1,46 @@
+{
+    "spinner": "Loading Camera...",
+    "toggle_btn": "☰",
+
+    "toggle_links": [
+        {
+            "url": "home-page",
+            "name": "Home"
+        },
+        {
+            "url": "about-page",
+            "name": "About"
+        },
+        {
+            "url": "video-page",
+            "name": "Video"
+        }
+    ],
+
+    "status": "LIVE",
+    "video_text": "Video Stream Will Appear Here...",
+
+    "control_btn": [
+        {
+            "id": "startBtn",
+            "class": "start",
+            "function": "startStream()",
+            "name": "▶ Start Stream"
+        },
+        {
+            "id": "stopBtn",
+            "class": "stop",
+            "function": "stopStream()",
+            "name": "⬇ Save Video"
+        },
+        {
+            "id": "detailsBtn",
+            "class": "details",
+            "function": "toggleDetails()",
+            "name": "Show Data"
+        }
+    ],
+
+    "description": "Seamlessly monitor real-time streams with instant start, secure recording, and history access. Experience smooth, reliable, and intelligent live video analysis – all in one place.",
+    "footer": "© 2026 LiveVision | All Rights Reserved."
+}

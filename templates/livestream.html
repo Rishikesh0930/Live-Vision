@@ -14,25 +14,25 @@
     <div class="video-box" id="videoBox">
       <div id="loader" style="display:none;">
         <div class="spinner"></div>
-          <p style="margin-top:10px;">Loading Camera...</p>
+          <p style="margin-top:10px;">{{ stream.spinner }}</p>
         </div>
       <img id="videoStream" style="max-width:100%; height:auto; display:none;">
-      <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+      <button class="menu-toggle" onclick="toggleMenu()">{{ stream.toggle_btn }}</button>
       <div class="menu" id="menu">
-        <a href="/home">Home</a>
-        <a href="/about">About</a>
-        <a href="/videos">Video</a>
+        {% for item in stream.toggle_links %}
+          <a href="{% url item.url %}">{{ item.name }}</a>
+        {% endfor %}
       </div>
       <div class="live-indicator" id="liveStatus">
-        <span class="dot"></span> LIVE
+        <span class="dot"></span> {{ stream.startus }}
         <span id="timer" style="margin-left: 8px; font-size: 14px; color: #FFF;"></span>
       </div>
-      <div id="videoText">Video Stream Will Appear Here</div>
+      <div id="videoText">{{ stream.video_text }}</div>
     </div>
     <div class="buttons">
-      <button id="startBtn" class="start" onclick="startStream()">▶ Start Stream</button>
-      <button id="stopBtn" class="stop" onclick="stopStream()">⬇ Save Video</button>
-      <button id="detailsBtn" class="save" onclick="toggleDetails()">Show Data</button>
+      {% for item in stream.control_btn %}
+        <button id="{{ item.id }}" class="{{ item.class }}" onclick="{{ item.function }}">{{ item.name }}</button>
+      {% endfor %}
     </div>
     <div id="detailsBox" class="details-box" style="display: none;">
       <div id="detailsContent">
@@ -41,10 +41,10 @@
     </div>
   </div>
   <div class="description">
-    <p>Seamlessly monitor real-time streams with instant start, secure recording, and history access. Experience smooth, reliable, and intelligent live video analysis – all in one place.</p>
+    <p>{{ stream.description }}</p>
   </div>
   <footer>
-    <p>© 2026 LiveVision |  All Rights Reserved.</p>
+    <p>{{ stream.footer }}</p>
   </footer>
   <script src="{% static 'js/livestream.js' %}"></script>
 </body>

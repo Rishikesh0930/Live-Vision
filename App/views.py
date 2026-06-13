@@ -11,19 +11,31 @@ from django.utils import timezone
 import json
 
 def start(request):
-    return render(request, 'start.html')
+    startpage_content = os.path.join(settings.BASE_DIR, 'static/json/startpage.json')
+    with open(startpage_content, 'r', encoding='utf-8') as f:
+        startpage = json.load(f)
+    return render(request, 'start.html',{"start": startpage})
 
 def home(request):
-    return render(request, 'home.html')
+    home_content = os.path.join(settings.BASE_DIR, 'static/json/home.json')
+    with open(home_content, 'r', encoding='utf-8') as f:
+        home = json.load(f)
+    return render(request, 'home.html', {"home": home})
 
 def live_stream(request):
-    return render(request, 'livestream.html')
+    stream_content = os.path.join(settings.BASE_DIR, 'static/json/livestream.json')
+    with open(stream_content, 'r', encoding='utf-8') as f:
+        stream = json.load(f)
+    return render(request, 'livestream.html', {"stream": stream})
 
 def about(request):
-    json_file_about = os.path.join(settings.BASE_DIR, 'static/json/about.json')
-    with open(json_file_about, 'r', encoding='utf-8') as f:
+    about_content = os.path.join(settings.BASE_DIR, 'static/json/about.json')
+    with open(about_content, 'r', encoding='utf-8') as f:
         about = json.load(f)
     return render(request, 'about.html', {"about": about})
+
+def help(request):
+    return render(request, 'help.html')
 
 def video(request):
     # Sync existing videos
