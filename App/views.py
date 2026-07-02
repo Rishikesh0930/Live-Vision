@@ -1,12 +1,10 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import StreamingHttpResponse, JsonResponse
-from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from ultralytics import YOLO
 from django.conf import settings
-from django.utils import timezone
 from django.utils import timezone
 from .models import Video
 import numpy as np
@@ -15,11 +13,23 @@ import os
 import time
 import json
 
+model = YOLO("yolov8n.pt")
+streaming = False
+recording = False
+video_writer = None
+current_filename = None
+object_counts = {}
+
+TARGET_FPS = 20
+frame_duration = 1.0 / TARGET_FPS
+start_time = 0
+frame_count = 0
+
 def start(request):
     startpage_content = os.path.join(settings.BASE_DIR, 'static/json/startpage.json')
     with open(startpage_content, 'r', encoding='utf-8') as f:
         startpage = json.load(f)
-    return render(request, 'start.html',{"start": startpage})
+    return render(request, 'start.html', {"start": startpage})
 
 def signupPage(request):
     error = None
@@ -35,7 +45,7 @@ def signupPage(request):
         else:
             User.objects.create_user(username=email, email=email, password=password, first_name=name)
             return redirect("login-page")
-    return render(request, 'signup.html',{"error": error})
+    return render(request, 'signup.html', {"error": error})
 
 def loginPage(request):
     error = None
@@ -77,7 +87,7 @@ def help(request):
 
 @login_required(login_url="login-page")
 def video(request):
-    # Sync existing videos
+    # Sync existing videos in media root
     videos_dir = settings.MEDIA_ROOT
     if os.path.exists(videos_dir):
         for filename in os.listdir(videos_dir):
@@ -85,42 +95,55 @@ def video(request):
                 file_path = os.path.join(videos_dir, filename)
                 if not Video.objects.filter(file_path=file_path).exists():
                     Video.objects.create(name=filename, file_path=file_path)
-
+                    
     active_videos = Video.objects.filter(deleted=False)
     deleted_videos = Video.objects.filter(deleted=True)
     return render(request, 'video.html', {'active_videos': active_videos, 'deleted_videos': deleted_videos})
 
+def delete_video(request, video_id):
+    video = get_object_or_404(Video, id=video_id)
+    video.deleted = True
+    video.deleted_at = timezone.now()
+    video.save()
+    return redirect("video-page")
 
-model = YOLO("yolov8n.pt")
-streaming = False
-recording = False
-out = None
-current_filename = None
+def restore_video(request, video_id):
+    video = get_object_or_404(Video, id=video_id)
+    video.deleted = False
+    video.deleted_at = None
+    video.save()
+    return redirect("video-page")
 
-# Global variables for object tracking
-object_counts = {}
+def permanent_delete_video(request, video_id):
+    video = get_object_or_404(Video, id=video_id)
+    if os.path.exists(video.file_path):
+        os.remove(video.file_path)
+    video.delete()
+    return redirect("video-page")
 
-def draw_rounded_box(img, top_left, bottom_right, color, radius=4):
-    ...
+def start_stream(request):
+    global streaming, recording, current_filename, video_writer, start_time, frame_count
+    if streaming:
+        return JsonResponse({"status": "already running"})
+    streaming = True
+    recording = True
+    frame_count = 0
+    start_time = time.time()
+    folder = settings.MEDIA_ROOT
+    os.makedirs(folder, exist_ok=True)
+    filename = time.strftime("%Y-%m-%d_%H-%M-%S") + ".mp4"
+    current_filename = filename
+    video_writer = None 
+    return JsonResponse({"status": "started"})
 
 def generate_frames():
-    global streaming, recording, out
+    global streaming, recording, video_writer, object_counts, current_filename, start_time, frame_count
     cap = cv2.VideoCapture(0)
-    last_time = time.time()
-    fps = 30
-
-    while streaming: 
-        current_time = time.time()
-        if current_time - last_time < 1/fps:
-            continue  # Skip frame to maintain FPS
-
+    while streaming:
         ret, frame = cap.read()
         if not ret:
             break
-
         results = model(frame, verbose=False)
-
-        # Collect all detections for this frame
         detections = []
         for r in results:
             for box in r.boxes:
@@ -128,175 +151,77 @@ def generate_frames():
                 label = model.names[cls_id]
                 x1, y1, x2, y2 = box.xyxy[0].int().tolist()
                 detections.append((label, x1, y1, x2, y2))
-
-        # Group by label and assign IDs
         label_counts = {}
-        for detection in detections:
-            label = detection[0]
-            if label not in label_counts:
-                label_counts[label] = 0
-            label_counts[label] += 1
-
-        # Reset counts for this frame
-        current_frame_counts = label_counts.copy()
-
-        # Draw detections with IDs
+        for d in detections:
+            label_counts[d[0]] = label_counts.get(d[0], 0) + 1
+        object_counts = label_counts.copy()
         label_counters = {}
         for label, x1, y1, x2, y2 in detections:
-            if label not in label_counters:
-                label_counters[label] = 0
-            label_counters[label] += 1
-            object_id = label_counters[label]
-
+            label_counters[label] = label_counters.get(label, 0) + 1
+            obj_id = label_counters[label]
             cx = int((x1 + x2) / 2)
             cy = int(y1)
-
-            # 🔹 Bounding Box (Frame)
-            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 200, 0), 2)  # Green box
-
-            # 🔹 Label with ID
-            display_label = f"{label} {object_id}"
-
-            # 🔹 Label Background (Rounded Box)
-            font_scale = 0.6
-            font_thickness = 1
-            (tw, th), _ = cv2.getTextSize(display_label, cv2.FONT_HERSHEY_SIMPLEX, font_scale, font_thickness)
-            padding_x, padding_y = 20, 15
-
-            rect_x1 = cx - (tw // 2) - padding_x
-            rect_y1 = cy - th - 35
-            rect_x2 = cx + (tw // 2) + padding_x
-            rect_y2 = cy - 10
-
-            draw_rounded_box(frame, (rect_x1, rect_y1), (rect_x2, rect_y2), (0, 200, 0), radius=4)
-
-            # 🔹 Text Centered
-            text_x = rect_x1 + (rect_x2 - rect_x1 - tw) // 2
-            text_y = rect_y1 + (rect_y2 - rect_y1 + th) // 2
-            cv2.putText(frame, display_label, (text_x, text_y),
-                        cv2.FONT_HERSHEY_SIMPLEX, font_scale, (0, 125, 0), font_thickness, cv2.LINE_AA)
-
-            # 🔹 Arrow pointing to object
-            arrow_points = np.array([
-                [cx - 10, rect_y2],
-                [cx + 10, rect_y2],
-                [cx, rect_y2 + 12]
-            ], np.int32)
-            cv2.fillPoly(frame, [arrow_points], (0, 200, 0))
-
-        # Update global counts
-        global object_counts
-        object_counts = current_frame_counts
-
-        # 🔹 Save to file if recording
-        if recording and out is not None:
-            out.write(frame)
-
+            cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 200, 0), 2)
+            text = f"{label} {obj_id}"
+            (tw, th), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 1)
+            x1b = cx - (tw // 2) - 20
+            y1b = cy - th - 35
+            x2b = cx + (tw // 2) + 20
+            y2b = cy - 10
+            cv2.rectangle(frame, (x1b, y1b), (x2b, y2b), (0, 200, 0), -1)
+            cv2.putText(frame, text, (x1b + 10, y1b + th + 5), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 1)
+            arrow = np.array([[cx - 10, y2b], [cx + 10, y2b], [cx, y2b + 12]])
+            cv2.fillPoly(frame, [arrow], (0, 200, 0))
+        if recording:
+            if video_writer is None:
+                height, width, _ = frame.shape
+                save_path = os.path.join(settings.MEDIA_ROOT, current_filename)
+                fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+                video_writer = cv2.VideoWriter(save_path, fourcc, TARGET_FPS, (width, height))
+            elapsed_time = time.time() - start_time
+            expected_frames = int(elapsed_time / frame_duration)
+            while frame_count < expected_frames:
+                video_writer.write(frame)
+                frame_count += 1
         ret, buffer = cv2.imencode('.jpg', frame)
-        frame = buffer.tobytes()
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-
-        last_time = current_time
-
+        frame_bytes = buffer.tobytes()
+        yield (
+            b'--frame\r\n'
+            b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n'
+        )
     cap.release()
-    if out:
-        out.release()
-        out = None
-
+    if video_writer:
+        video_writer.release()
+        video_writer = None
 
 def video_feed(request):
     global streaming
     streaming = True
-    return StreamingHttpResponse(generate_frames(),
-                content_type='multipart/x-mixed-replace; boundary=frame')
+    return StreamingHttpResponse(
+        generate_frames(),
+        content_type='multipart/x-mixed-replace; boundary=frame'
+    )
 
-
-# 🔹 Start Stream
-def start_stream(request):
-    global streaming, recording, out, object_counts
-
-    streaming = True
-    recording = True
-
-    # Reset object tracking for new session
-    object_counts = {}
-
-    folder = settings.MEDIA_ROOT
-    os.makedirs(folder, exist_ok=True)
-
-    filename = time.strftime("%Y-%m-%d_%H-%M-%S") + ".mp4"
-    save_path = os.path.join(folder, filename)
-
-    cam = cv2.VideoCapture(0)
-    width = int(cam.get(cv2.CAP_PROP_FRAME_WIDTH))
-    height = int(cam.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    fps = 30  # Standard FPS
-    print(f"Using FPS: {fps}, Width: {width}, Height: {height}")
-    cam.release()
-
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-    out = cv2.VideoWriter(save_path, fourcc, fps, (width, height))
-
-    global current_filename
-    current_filename = filename
-
-
-
-# 🔹 Stop Stream
 def stop_stream(request):
-    global streaming, recording, out, current_filename, object_counts
-
+    global streaming, recording, video_writer, current_filename, object_counts
     streaming = False
     recording = False
-
-    if out:
-        out.release()
-        out = None
-
+    if video_writer:
+        video_writer.release()
+        video_writer = None
     if current_filename:
-        # Create Video object
-        video_path = os.path.join(settings.MEDIA_ROOT, current_filename)
-        if os.path.exists(video_path):
-            Video.objects.create(name=current_filename, file_path=video_path)
-            print(f"Video saved: {video_path}")
-        else:
-            print(f"Video file not found: {video_path}")
+        path = os.path.join(settings.MEDIA_ROOT, current_filename)
+        if os.path.exists(path):
+            Video.objects.create(
+                name=current_filename,
+                file_path=path
+            )
         current_filename = None
-
-    # Reset object tracking
     object_counts = {}
-
-    return JsonResponse({"status": "stopped", "message": "Video saved successfully!"})
-
+    return JsonResponse({"status": "stopped"})
 
 def get_object_details(request):
     global streaming, object_counts
     if streaming:
         return JsonResponse({"objects": object_counts})
-    else:
-        return JsonResponse({"message": "No objects found"})
-
-
-def delete_video(request, video_id):
-    video = get_object_or_404(Video, id=video_id)
-    video.deleted = True
-    video.deleted_at = timezone.now()
-    video.save()
-    return redirect('video-page')
-
-
-def restore_video(request, video_id):
-    video = get_object_or_404(Video, id=video_id)
-    video.deleted = False
-    video.deleted_at = None
-    video.save()
-    return redirect('video-page')
-
-
-def permanent_delete_video(request, video_id):
-    video = get_object_or_404(Video, id=video_id)
-    if os.path.exists(video.file_path):
-        os.remove(video.file_path)
-    video.delete()
-    return redirect('video-page')
+    return JsonResponse({"objects": {}})

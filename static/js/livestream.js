@@ -84,33 +84,3 @@ function stopStream() {
     document.getElementById("startBtn").disabled = false; // optional: enable again
 
 }
-
-function toggleDetails() {
-    const detailsBox = document.getElementById("detailsBox");
-
-    if (detailsBox.style.display === "none") {
-        // Show details
-        detailsBox.style.display = "block";
-        updateDetails(); // Initial update
-        // Start live updates every 2 seconds
-        detailsUpdateInterval = setInterval(updateDetails, 2000);
-    } else {
-        // Hide details
-        detailsBox.style.display = "none";
-        clearInterval(detailsUpdateInterval);
-    }
-}
-
-function toggleMenu() {
-    let menu = document.getElementById("menu");
-    menu.style.display = (menu.style.display === "flex") ? "none" : "flex";
-}
-// Close menu if clicked outside
-window.onclick = function (event) {
-    if (!event.target.matches('.menu-toggle')) {
-        let menu = document.getElementById("menu");
-        if (menu.style.display === "flex") {
-            menu.style.display = "none";
-        }
-    }
-}
