@@ -27,13 +27,9 @@
     "p3": "LiveVision uses deep learning models built on modern computer vision frameworks. The AI adapts dynamically to visuals, providing precise recognition across varied objects and environments.",
     "p4_title": "🔍 Why LiveVision?",
     "p4": "The rapid growth of video surveillance systems and real-time monitoring applications has created a strong need for intelligent solutions that can automatically analyze live video streams. Traditional monitoring systems rely heavily on human operators, which is time-consuming, error-prone, and inefficient, especially when dealing with large-scale video data. This limitation motivated the development of the LiveVision System. This system is designed to address the challenge of identifying and analyzing multiple objects simultaneously in real time.",
-
     "team_section_title1": "Meet the Developer",
-    "team_section_title2": "This system designed by",
-    "developer": "Mr. Rishikesh Kushwaha",
-    "specialization": "Software Developer",
-    "click_here": "👉 Click here",
-    "view_profile": "to view profile.",
-
+    "team_section_title2": "This project, “Live Vision”, was developed by Mr. Rishikesh Kushwaha (Indian) in the year 2026. It is designed as an AI-powered real-time object detection system that processes live camera feeds with high accuracy and speed. The main purpose of this project is to enable smart monitoring and automated surveillance using modern computer vision techniques. It demonstrates the practical use of machine learning and deep learning in real-world applications. The system is built to deliver fast, reliable, and intelligent visual analysis for security and monitoring purposes.",
+    "click_here": "Click here",
+    "view_profile": "To view profile.",
     "footer_content": "© 2026 LiveVision | All Rights Reserved."
 }

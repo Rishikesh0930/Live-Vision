@@ -10,7 +10,7 @@
   <link rel="stylesheet" type="text/css" href="{% static 'css/about.css' %}">
 </head>
 <body>
-  <button class="go-home-btn" onclick="goHome()"><i class="fas fa-arrow-left"></i></button>
+  <button class="go-home-btn" onclick="goHome()">Go Back</button>
   <main class="main-container">
     <div class="tops-card">
       <h1>{{ about.title }}</h1>
@@ -40,11 +40,9 @@
       <div class="member">
         <h2>{{ about.team_section_title1 }}</h2>
         <h3>{{ about.team_section_title2 }}</h3>
-        <h4>{{ about.developer }}</h4>
-        <p>{{ about.specialization }}</p>
       </div>
-      <a href="https://rishikesh0930-portfolio.onrender.com">{{ about.click_here }}</a>
       <l class="line">{{ about.view_profile }}</l>
+      <a href="https://rishikesh0930-portfolio.onrender.com">{{ about.click_here }}</a>
     </div>
   </main>
   <footer>

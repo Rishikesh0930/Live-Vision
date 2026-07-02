@@ -17,12 +17,6 @@
           <p style="margin-top:10px;">{{ stream.spinner }}</p>
         </div>
       <img id="videoStream" style="max-width:100%; height:auto; display:none;">
-      <button class="menu-toggle" onclick="toggleMenu()">{{ stream.toggle_btn }}</button>
-      <div class="menu" id="menu">
-        {% for item in stream.toggle_links %}
-          <a href="{% url item.url %}">{{ item.name }}</a>
-        {% endfor %}
-      </div>
       <div class="live-indicator" id="liveStatus">
         <span class="dot"></span> {{ stream.startus }}
         <span id="timer" style="margin-left: 8px; font-size: 14px; color: #FFF;"></span>
@@ -42,6 +36,7 @@
   </div>
   <div class="description">
     <p>{{ stream.description }}</p>
+    <a href="{% url stream.goDashboard %}">{{ stream.Dashboard }}</a>
   </div>
   <footer>
     <p>{{ stream.footer }}</p>

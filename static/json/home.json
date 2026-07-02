@@ -1,11 +1,12 @@
 {
-    "title": "Live",
-    "subtitle": "Vision",
+    "title": "⌜𝑳",
+    "subtitle": "⊙",
+    "titlex": "𝓥⌟",
 
     "navbar": [
         {
             "url":"home-page",
-            "name": "Home"
+            "name": "Dashboard"
         },
         {
             "url":"about-page",
@@ -13,11 +14,11 @@
         },
         {
             "url":"video-page",
-            "name": "Videos"
+            "name": "Media"
         },
         {
             "url":"help-page",
-            "name": "Help"
+            "name": "Help & Support"
         }
     ],
 
@@ -25,24 +26,42 @@
     "emoji": "😍",
     "headline": "Smart detection, Real-time monitoring, live video analysis smarter, faster and more reliable and analysis with saved history access.",
 
-    "img_address": "images/status_img1.png",
-    "img_no": "Image1",
-    "img_caption": "Real-time monitoring and analysis with saved history access",
     "slider":[
         {
-            "address": "images/status_img2.png",
+            "address": "images/Lv1.png",
+            "img_no": "Image1",
+            "title": "LIVE VISION",
+            "subtitle": "Smart Detection with High Accuracy",
+            "heading": "Real-Time Monitoring & Analysis",
+            "text1": "➤ AI-Powered Object Detection",
+            "text2": "➤ Fast Detection"
+        },
+        {
+            "address": "images/Lv2.png",
             "img_no": "Image2",
-            "caption": "Seamless automation, Live video analysis smarter, faster, and more reliable"
+            "title": "LIVE CAMERA",
+            "subtitle": "Real-Time Video Processing",
+            "heading": "Designed for Continuous Monitoring",
+            "text1": "➤ Fast & Reliable Detection Engine",
+            "text2": "➤ Instant Object Recognition"
         },
         {
-            "address": "images/status_img3.png",
+            "address": "images/Lv3.png",
             "img_no": "Image3",
-            "caption": "Real-time multi-classification detection system"
+            "title": "SMART SURVEILLANCE",
+            "subtitle": "24×7 AI Monitoring",
+            "heading": "Track Objects with Precision",
+            "text1": "➤ Track Objects with Precision",
+            "text2": "➤ Reliable Security Through AI"
         },
         {
-            "address": "images/status_img4.png",
+            "address": "images/Lv4.png",
             "img_no": "Image4",
-            "caption": "Real-time multi-classification detection system"
+            "title": "DETECTION INSIGHTS",
+            "subtitle": "Analyze Every Detection",
+            "heading": "Review Detection History",
+            "text1": "➤ Data-Driven Decision Making",
+            "text2": "➤ Generate Smart Reports"
         }
     ],
 
@@ -51,18 +70,27 @@
 
     "card" :[
         {
-            "title": "🔴 Real-time Monitoring",
-            "content": "Instant object detection with live video feed."
+            "title": "⏰ Real-time Monitoring",
+            "content": "Live Vision continuously processes camera feed in real-time to detect and identify objects instantly. The system ensures smooth video streaming with minimal delay, enabling accurate surveillance and monitoring of environments such as rooms, streets, or workplaces."
         },
         {
             "title": "💾 Saved Sessions",
-            "content": "Replay and analyze previously captured streams anytime."
+            "content": "All detection sessions are automatically stored for future reference. Users can replay previous video streams, review detected objects frame-by-frame, and analyze specific events. This helps in tracking incidents, training improvements, and long-term monitoring insights."
         },
         {
             "title": "📊 Insights",
-            "content": "Track and review detection patterns for better decisions."
+            "content": "Live Vision generates intelligent analytics from detection data, including object frequency, movement patterns, and detection trends over time. These insights help users understand behavioral patterns, improve decision-making, and enhance security efficiency."
         }
     ],
-    
-    "footer": "© 2026 LiveVision | All Rights Reserved."
+
+    "feature":[
+        "📸 Live Camera.",
+        "🎯 Real-Time Objects Detection.",
+        "⚡ Fast Detection.",
+        "🧠 High Accuracy.",
+        "🛡️ Security Surveillance."
+    ],
+    "footer_p1": "An AI-powered platform for real-time monitoring, analysis and safety | Login is required to access LiveVision dashboards and analytics.",
+    "footer_p2": "© 2026 LiveVision | All Rights Reserved.",
+    "footer_p3": "Log Out"
 }

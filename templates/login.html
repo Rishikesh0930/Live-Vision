@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<title>VisionSphere AI</title>
+<link rel="stylesheet" type="text/css" href="{% static 'css/login.css' %}">
+</head>
+<body>
+
+<div class="login-container">
+    <h2>Login to VisionSphere AI</h2>
+    {% if error %}
+    <div id="errorMessage" class="error">{{ error }}</div>
+    {% else %}
+    <div id="errorMessage" class="error" style="display:none;"></div>
+    {% endif %}
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email">
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" name="password">
+        </div>
+        <button type="submit">Login</button>
+        <div class="signup-link">
+            Don’t have an account?
+            <a href="{% url 'signup-page' %}">Sign Up</a>
+        </div>
+    </form>
+</div>
+<script src="{% static 'js/login.js' %}"></script>
+</body>
+</html>

@@ -1,13 +1,18 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import StreamingHttpResponse, JsonResponse
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from ultralytics import YOLO
-import cv2
-import numpy as np
 from django.conf import settings
+from django.utils import timezone
+from django.utils import timezone
+from .models import Video
+import numpy as np
+import cv2
 import os
 import time
-from .models import Video
-from django.utils import timezone
 import json
 
 def start(request):
@@ -16,27 +21,61 @@ def start(request):
         startpage = json.load(f)
     return render(request, 'start.html',{"start": startpage})
 
+def signupPage(request):
+    error = None
+    if request.method == "POST":
+        name = request.POST.get("name")
+        email = request.POST.get("email")
+        password = request.POST.get("password")
+        confirmPassword = request.POST.get("confirmPassword")
+        if password != confirmPassword:
+            error = "Passwords do not match"
+        elif User.objects.filter(username=email).exists():
+            error = "User already exists"
+        else:
+            User.objects.create_user(username=email, email=email, password=password, first_name=name)
+            return redirect("login-page")
+    return render(request, 'signup.html',{"error": error})
+
+def loginPage(request):
+    error = None
+    if request.method == "POST":
+        email = request.POST.get("email")
+        password = request.POST.get("password")
+        user = authenticate(request, username=email, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect("home-page")
+        else:
+            error = "Invalid email or password"
+    return render(request, 'login.html', {"error": error})
+
+@login_required(login_url="login-page")
 def home(request):
     home_content = os.path.join(settings.BASE_DIR, 'static/json/home.json')
     with open(home_content, 'r', encoding='utf-8') as f:
         home = json.load(f)
     return render(request, 'home.html', {"home": home})
 
+@login_required(login_url="login-page")
 def live_stream(request):
     stream_content = os.path.join(settings.BASE_DIR, 'static/json/livestream.json')
     with open(stream_content, 'r', encoding='utf-8') as f:
         stream = json.load(f)
     return render(request, 'livestream.html', {"stream": stream})
 
+@login_required(login_url="login-page")
 def about(request):
     about_content = os.path.join(settings.BASE_DIR, 'static/json/about.json')
     with open(about_content, 'r', encoding='utf-8') as f:
         about = json.load(f)
     return render(request, 'about.html', {"about": about})
 
+@login_required(login_url="login-page")
 def help(request):
     return render(request, 'help.html')
 
+@login_required(login_url="login-page")
 def video(request):
     # Sync existing videos
     videos_dir = settings.MEDIA_ROOT

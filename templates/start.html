@@ -9,11 +9,12 @@
   <link rel="stylesheet" type="text/css" href="{% static 'css/start.css' %}">
 </head>
 <body>
-  <!-- Background circles -->
-  <div class="circle"></div>
-  <div class="circle"></div>
-  <div class="circle"></div>
-
+  <nav class="indx-nav">
+    <div class="indx-nav-btn">
+      <a href="{% url 'signup-page' %}">Sign Up</a>
+      <a href="{% url 'login-page' %}">Login</a>
+    </div>
+  </nav>
   <!-- Center content -->
   <div class="content">
     <h1>{{ start.welcome }}</h1>
