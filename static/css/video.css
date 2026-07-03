@@ -1,7 +1,7 @@
 body {
     padding: 0;
     margin: 0;
-    background-color: #f0f2f5;;
+    background-color: #f0f2f5;
     font-family: 'Inter', sans-serif;
     overflow-x: hidden;
 }
@@ -37,59 +37,55 @@ body {
     padding: 20px;
     margin-top: 60px;
     margin-left: 20%;
-}
-
-.tabs {
     display: flex;
+    align-items: center;
+    justify-content: flex-start; 
+    text-align: center;
+    flex-direction: column;
+    overflow-y: auto; 
+}
+
+.title {
+    width: 100%;
     border-bottom: 1px solid #ccc;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
-.tab-button {
-    flex: 1;
-    padding: 10px;
-    background: none;
-    border: none;
-    border-bottom: 1px solid #e6e6e6;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: 500;
-    color: #1a1a1a;
-    transition: color 0.3s;
-}
-
-.tab-button.active {
-    background-color: #ccc;
-}
-
-.tab-content {
-    display: none;
-}
-
-.tab-content.active {
-    display: block;
+.title h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #b62f2f;
+    margin-bottom: 10px;
 }
 
 .video-item {
-    padding: 10px;
-    border-bottom: 1px solid #bfbfbf;
+    width: 96%;
+    margin-top: 10px;
+    padding: 12px 15px; 
+    border: 1px solid #d9d9d9;
+    background-color: #d9d9d9;
+    border-radius: 8px;
     font-size: 16px;
     display: flex;
-    justify-content: space-between;
+    flex-direction: row;
     align-items: center;
+    justify-content: space-between; 
+    box-sizing: border-box;
 }
 
-.video-item:last-child {
-    border-bottom: none;
+.vid_name {
+    text-align: left;
+    font-weight: 500;
+    color: #333;
 }
 
 .video-actions {
     display: flex;
-    gap: 10px;
+    gap: 10px; 
 }
 
 .btn {
-    padding: 5px 10px;
+    padding: 6px 12px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -114,26 +110,4 @@ body {
 
 .delete-btn:hover {
     background-color: #cc3333;
-}
-
-.restore-btn {
-    background-color: #44ff44;
-    color: #1a1a1a;
-}
-
-.restore-btn:hover {
-    background-color: #33cc33;
-}
-
-.permanent-delete-btn {
-    background-color: #ff4444;
-    color: white;
-}
-
-.permanent-delete-btn:hover {
-    background-color: #cc3333;
-}
-
-p {
-    color: #777777;
 }

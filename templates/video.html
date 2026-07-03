@@ -12,36 +12,21 @@
 <body>
   <button class="go-home-btn" onclick="goHome()">Go Back</button>
   <div class="card">
-    <div class="tabs">
-      <button class="tab-button active" onclick="showTab('video')">Video</button>
-      <button class="tab-button" onclick="showTab('deleted')">Recently Deleted Video</button>
+    <div class="title">
+      <h1>Recordings</h1>
     </div>
-    <div id="video-tab" class="tab-content active">
-      {% for video in active_videos %}
-        <div class="video-item">
+    {% for video in active_videos %}
+      <div class="video-item">
+        <div class="vid_name">
           <span>{{ video.name }}</span>
-          <div class="video-actions">
-            <a href="/media/{{ video.name }}" download class="btn play-btn">Download</a>
-            <button class="btn delete-btn" onclick="confirmDelete({{ video.id }}, '{{ video.name }}')">Delete</button>
-          </div>
+        </div> <div class="video-actions">
+          <a href="/media/{{ video.name }}" download class="btn play-btn">Download</a>
+          <button class="btn delete-btn" onclick="confirmDelete({{ video.id }}, '{{ video.name }}')">Delete</button>
         </div>
-      {% empty %}
-        <p>No videos available.</p>
-      {% endfor %}
-    </div>
-    <div id="deleted-tab" class="tab-content">
-      {% for video in deleted_videos %}
-        <div class="video-item">
-          <span>{{ video.name }}</span>
-          <div class="video-actions">
-            <button class="btn restore-btn" onclick="restoreVideo({{ video.id }})">Restore</button>
-            <button class="btn permanent-delete-btn" onclick="confirmPermanentDelete({{ video.id }}, '{{ video.name }}')">Delete Permanently</button>
-          </div>
-        </div>
-      {% empty %}
-        <p>No recently deleted videos.</p>
-      {% endfor %}
-    </div>
+      </div>
+    {% empty %}
+      <p>No videos available.</p>
+    {% endfor %}
   </div>
   <script src="{% static 'js/video.js' %}"></script>
 </body>

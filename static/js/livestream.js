@@ -1,5 +1,8 @@
 let timerInterval;
 let detailsUpdateInterval;
+let dataInterval = null;
+let isShowingData = false;
+let streamRunning = false;   
 
 function formatClock() {
     let now = new Date();
@@ -12,65 +15,37 @@ function formatClock() {
     return hours + ":" + minutes + " " + ampm;
 }
 
-function updateDetails() {
-    const detailsBox = document.getElementById("detailsBox");
-    const detailsContent = document.getElementById("detailsContent");
-
-    if (detailsBox.style.display === "block") {
-        fetch("/get_object_details/")
-            .then(response => response.json())
-            .then(data => {
-                if (data.objects && Object.keys(data.objects).length > 0) {
-                    let html = "<h3>Detected Objects</h3><ul>";
-                    for (const [obj, count] of Object.entries(data.objects)) {
-                        html += `<li><strong>${obj}:</strong> ${count}</li>`;
-                    }
-                    html += "</ul>";
-                    detailsContent.innerHTML = html;
-                } else {
-                    detailsContent.innerHTML = "<p>No objects found</p>";
-                }
-            })
-            .catch(error => {
-                detailsContent.innerHTML = "<p>Error loading details</p>";
-            });
-    }
-}
-
 function startStream() {
-    fetch("/start_stream/");  // Django URL
+    streamRunning = true;
+    fetch("/start_stream/");
     const video = document.getElementById("videoStream");
     const loader = document.getElementById("loader");
     const videoText = document.getElementById("videoText");
-
-    // Show loader, hide video & text
     loader.style.display = "flex";
     video.style.display = "none";
     videoText.style.display = "none";
-
     video.onload = () => {
-        loader.style.display = "none";   // hide loader
-        video.style.display = "block";   // show video
+        loader.style.display = "none";
+        video.style.display = "block";
     };
-
     video.src = "/video_feed/";
     document.getElementById("liveStatus").style.display = "flex";
     document.getElementById("timer").innerText = formatClock();
-    // 🔹 Update clock every second
     timerInterval = setInterval(() => {
         document.getElementById("timer").innerText = formatClock();
     }, 1000);
-    // 🔹 Start button text & icon change
     document.getElementById("startBtn").innerHTML = "⏸ Streaming...";
-    document.getElementById("startBtn").disabled = true; // optional: disable start button
+    document.getElementById("startBtn").disabled = true;
 }
 
+
+
 function stopStream() {
-    fetch("/stop_stream/"); // Django URL
+    streamRunning = false;
+    fetch("/stop_stream/");
     const video = document.getElementById("videoStream");
     const loader = document.getElementById("loader");
     const videoText = document.getElementById("videoText");
-    // Reset to default state
     video.style.display = "none";
     loader.style.display = "none";
     videoText.style.display = "block";
@@ -78,9 +53,100 @@ function stopStream() {
     video.src = "";
     document.getElementById("liveStatus").style.display = "none";
     clearInterval(timerInterval);
-    clearInterval(detailsUpdateInterval); // Stop details updates
-
+    clearInterval(detailsUpdateInterval);
     document.getElementById("startBtn").innerHTML = "▶ Start Stream";
-    document.getElementById("startBtn").disabled = false; // optional: enable again
-
+    document.getElementById("startBtn").disabled = false;
+    if (dataInterval) {
+        clearInterval(dataInterval);
+        dataInterval = null;
+    }
+    document.getElementById("liveDataContainer").style.display = "none";
+    document.getElementById("showDataBtn").innerText = "Show Data";
+    isShowingData = false;
 }
+
+
+function toggleDataDisplay() {
+
+    const dataContainer = document.getElementById("liveDataContainer");
+    const showBtn = document.getElementById("showDataBtn");
+    const tableBody = document.getElementById("objectTableBody");
+    if (isShowingData) {
+        clearInterval(dataInterval);
+        dataContainer.style.display = "none";
+        showBtn.innerText = "Show Data";
+        showBtn.style.backgroundColor = "";
+        isShowingData = false;
+        return;
+    }
+
+    dataContainer.style.display = "block";
+    showBtn.innerText = "Hide Data";
+    showBtn.style.backgroundColor = "#4d4d4d";
+    isShowingData = true;
+    if (!streamRunning) {
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="2"
+                    style="padding:8px;text-align:center;color:#666;">
+                    No Object Detected
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    fetchLiveObjects();
+    dataInterval = setInterval(fetchLiveObjects, 1000);
+}
+
+
+function fetchLiveObjects() {
+    fetch("/get-object-details/")
+    .then(response => response.json())
+    .then(data => {
+        const tableBody = document.getElementById("objectTableBody");
+        tableBody.innerHTML = "";
+        const objects = data.objects;
+        if (!objects || Object.keys(objects).length === 0) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="2"
+                        style="padding:8px;text-align:center;color:#666;">
+                        No Object Detected
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+        for (const [objectName, count] of Object.entries(objects)) {
+            tableBody.innerHTML += `
+                <tr>
+                    <td style="padding:8px;font-weight:bold;text-transform:capitalize;">
+                        ${objectName}
+                    </td>
+                    <td style="padding:8px;color:#b62f2f;font-weight:bold;">
+                        ${count}
+                    </td>
+                </tr>
+            `;
+        }
+    })
+    .catch(error => {
+        console.error(error);
+        document.getElementById("objectTableBody").innerHTML = `
+            <tr>
+                <td colspan="2"
+                    style="padding:8px;text-align:center;color:red;">
+                    Error Loading Data
+                </td>
+            </tr>
+        `;
+    });
+}
+
+window.addEventListener("beforeunload", function (event) {
+    if (streamRunning) {
+        event.preventDefault();
+        event.returnValue = "";
+    }
+});

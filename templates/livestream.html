@@ -28,10 +28,18 @@
         <button id="{{ item.id }}" class="{{ item.class }}" onclick="{{ item.function }}">{{ item.name }}</button>
       {% endfor %}
     </div>
-    <div id="detailsBox" class="details-box" style="display: none;">
-      <div id="detailsContent">
-        <!-- Content will be loaded here -->
-      </div>
+    <div id="liveDataContainer" style="display: none; margin-top: 20px;">
+      <table id="objectTable" border="1" style="width: 100%; text-align: left; border-collapse: collapse;">
+          <thead>
+              <tr style="background-color: #e6e6e6; color: #1a1a1a;">
+                  <th style="padding: 8px; color: #b62f2f;">Object Name</th>
+                  <th style="padding: 8px; color: #b62f2f;">Current Count</th>
+              </tr>
+          </thead>
+          <tbody id="objectTableBody">
+              <tr><td colspan="2" style="padding: 8px; text-align: center;">Waiting for data...</td></tr>
+          </tbody>
+      </table>
     </div>
   </div>
   <div class="description">

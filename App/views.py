@@ -87,7 +87,6 @@ def help(request):
 
 @login_required(login_url="login-page")
 def video(request):
-    # Sync existing videos in media root
     videos_dir = settings.MEDIA_ROOT
     if os.path.exists(videos_dir):
         for filename in os.listdir(videos_dir):
@@ -95,31 +94,17 @@ def video(request):
                 file_path = os.path.join(videos_dir, filename)
                 if not Video.objects.filter(file_path=file_path).exists():
                     Video.objects.create(name=filename, file_path=file_path)
-                    
     active_videos = Video.objects.filter(deleted=False)
     deleted_videos = Video.objects.filter(deleted=True)
     return render(request, 'video.html', {'active_videos': active_videos, 'deleted_videos': deleted_videos})
 
 def delete_video(request, video_id):
     video = get_object_or_404(Video, id=video_id)
-    video.deleted = True
-    video.deleted_at = timezone.now()
-    video.save()
-    return redirect("video-page")
-
-def restore_video(request, video_id):
-    video = get_object_or_404(Video, id=video_id)
-    video.deleted = False
-    video.deleted_at = None
-    video.save()
-    return redirect("video-page")
-
-def permanent_delete_video(request, video_id):
-    video = get_object_or_404(Video, id=video_id)
     if os.path.exists(video.file_path):
         os.remove(video.file_path)
     video.delete()
     return redirect("video-page")
+
 
 def start_stream(request):
     global streaming, recording, current_filename, video_writer, start_time, frame_count
@@ -139,22 +124,31 @@ def start_stream(request):
 def generate_frames():
     global streaming, recording, video_writer, object_counts, current_filename, start_time, frame_count
     cap = cv2.VideoCapture(0)
+    frame_idx = 0
+    detections = []
+
     while streaming:
         ret, frame = cap.read()
         if not ret:
             break
-        results = model(frame, verbose=False)
-        detections = []
-        for r in results:
-            for box in r.boxes:
-                cls_id = int(box.cls[0])
-                label = model.names[cls_id]
-                x1, y1, x2, y2 = box.xyxy[0].int().tolist()
-                detections.append((label, x1, y1, x2, y2))
-        label_counts = {}
-        for d in detections:
-            label_counts[d[0]] = label_counts.get(d[0], 0) + 1
-        object_counts = label_counts.copy()
+
+        if frame_idx % 2 == 0:
+            results = model(frame, verbose=False)
+            detections = []
+            for r in results:
+                for box in r.boxes:
+                    cls_id = int(box.cls[0])
+                    label = model.names[cls_id]
+                    x1, y1, x2, y2 = box.xyxy[0].int().tolist()
+                    detections.append((label, x1, y1, x2, y2))
+            
+            label_counts = {}
+            for d in detections:
+                label_counts[d[0]] = label_counts.get(d[0], 0) + 1
+            object_counts = label_counts.copy()
+            
+        frame_idx += 1
+
         label_counters = {}
         for label, x1, y1, x2, y2 in detections:
             label_counters[label] = label_counters.get(label, 0) + 1
@@ -172,23 +166,29 @@ def generate_frames():
             cv2.putText(frame, text, (x1b + 10, y1b + th + 5), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 1)
             arrow = np.array([[cx - 10, y2b], [cx + 10, y2b], [cx, y2b + 12]])
             cv2.fillPoly(frame, [arrow], (0, 200, 0))
-        if recording:
+
+        if recording and current_filename:
             if video_writer is None:
                 height, width, _ = frame.shape
                 save_path = os.path.join(settings.MEDIA_ROOT, current_filename)
                 fourcc = cv2.VideoWriter_fourcc(*'mp4v')
                 video_writer = cv2.VideoWriter(save_path, fourcc, TARGET_FPS, (width, height))
+                start_time = time.time()
+                frame_count = 0
+
             elapsed_time = time.time() - start_time
             expected_frames = int(elapsed_time / frame_duration)
             while frame_count < expected_frames:
                 video_writer.write(frame)
                 frame_count += 1
+
         ret, buffer = cv2.imencode('.jpg', frame)
         frame_bytes = buffer.tobytes()
         yield (
             b'--frame\r\n'
             b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n'
         )
+
     cap.release()
     if video_writer:
         video_writer.release()
@@ -197,10 +197,70 @@ def generate_frames():
 def video_feed(request):
     global streaming
     streaming = True
-    return StreamingHttpResponse(
-        generate_frames(),
-        content_type='multipart/x-mixed-replace; boundary=frame'
-    )
+    return StreamingHttpResponse(generate_frames(), content_type='multipart/x-mixed-replace; boundary=frame')
+
+# def generate_frames():
+#     global streaming, recording, video_writer, object_counts, current_filename, start_time, frame_count
+#     cap = cv2.VideoCapture(0)
+#     while streaming:
+#         ret, frame = cap.read()
+#         if not ret:
+#             break
+#         results = model(frame, verbose=False)
+#         detections = []
+#         for r in results:
+#             for box in r.boxes:
+#                 cls_id = int(box.cls[0])
+#                 label = model.names[cls_id]
+#                 x1, y1, x2, y2 = box.xyxy[0].int().tolist()
+#                 detections.append((label, x1, y1, x2, y2))
+#         label_counts = {}
+#         for d in detections:
+#             label_counts[d[0]] = label_counts.get(d[0], 0) + 1
+#         object_counts = label_counts.copy()
+#         label_counters = {}
+#         for label, x1, y1, x2, y2 in detections:
+#             label_counters[label] = label_counters.get(label, 0) + 1
+#             obj_id = label_counters[label]
+#             cx = int((x1 + x2) / 2)
+#             cy = int(y1)
+#             cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 200, 0), 2)
+#             text = f"{label} {obj_id}"
+#             (tw, th), _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.6, 1)
+#             x1b = cx - (tw // 2) - 20
+#             y1b = cy - th - 35
+#             x2b = cx + (tw // 2) + 20
+#             y2b = cy - 10
+#             cv2.rectangle(frame, (x1b, y1b), (x2b, y2b), (0, 200, 0), -1)
+#             cv2.putText(frame, text, (x1b + 10, y1b + th + 5), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 0), 1)
+#             arrow = np.array([[cx - 10, y2b], [cx + 10, y2b], [cx, y2b + 12]])
+#             cv2.fillPoly(frame, [arrow], (0, 200, 0))
+#         if recording:
+#             if video_writer is None:
+#                 height, width, _ = frame.shape
+#                 save_path = os.path.join(settings.MEDIA_ROOT, current_filename)
+#                 fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+#                 video_writer = cv2.VideoWriter(save_path, fourcc, TARGET_FPS, (width, height))
+#             elapsed_time = time.time() - start_time
+#             expected_frames = int(elapsed_time / frame_duration)
+#             while frame_count < expected_frames:
+#                 video_writer.write(frame)
+#                 frame_count += 1
+#         ret, buffer = cv2.imencode('.jpg', frame)
+#         frame_bytes = buffer.tobytes()
+#         yield (
+#             b'--frame\r\n'
+#             b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n'
+#         )
+#     cap.release()
+#     if video_writer:
+#         video_writer.release()
+#         video_writer = None
+
+# def video_feed(request):
+#     global streaming
+#     streaming = True
+#     return StreamingHttpResponse(generate_frames(),content_type='multipart/x-mixed-replace; boundary=frame')
 
 def stop_stream(request):
     global streaming, recording, video_writer, current_filename, object_counts

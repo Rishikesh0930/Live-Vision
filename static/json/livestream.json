@@ -26,15 +26,15 @@
             "name": "▶ Start Stream"
         },
         {
-            "id": "stopBtn",
+            "id": "saveBtn",
             "class": "stop",
             "function": "stopStream()",
             "name": "⬇ Save Video"
         },
         {
-            "id": "detailsBtn",
+            "id": "showDataBtn",
             "class": "details",
-            "function": "toggleDetails()",
+            "function": "toggleDataDisplay()",
             "name": "Show Data"
         }
     ],

@@ -6,8 +6,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Live Vision</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="{% static 'css/help.css' %}">
 </head>
 <body>
-    <h1> HelpPage</h1>
+<button class="go-home-btn" onclick="goHome()">Go Back</button>
+<div class="chat-container">
+    <div class="chat-header">
+        <h2>LiveVision 🤖</h2>
+    </div>
+    <div class="chat-box" id="chatBox">
+        <div class="message bot-msg">
+            How can I help you today?
+        </div>
+    </div>
+    <div class="options-container">
+        <div class="options-title">Select a Question:</div>
+        <button class="que-btn" onclick="askBot('How do I start the Live Stream?', 'stream')">1. How do I start the Live Stream?</button>
+        <button class="que-btn" onclick="askBot('Where are the recordings saved?', 'save')">2. Where are the recordings saved?</button>
+        <button class="que-btn" onclick="askBot('How can I see live object counting?', 'count')">3. How can I see live object counting?</button>
+        <button class="que-btn" onclick="askBot('How to permanently delete a video?', 'delete')">4. How to permanently delete a video?</button>
+    </div>
+</div>
+<script src="{% static 'js/help.js' %}"></script>
 </body>
 </html>
